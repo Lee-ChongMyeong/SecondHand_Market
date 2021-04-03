@@ -14,11 +14,11 @@ const exchangeBoard = new Schema({
 
 });
 
-user.virtual('exchangeId').get(function () {
+exchangeBoard.virtual('exchangeId').get(function () {
 	return this._id.toHexString();
 });
 
-user.set('toJSON', {
+exchangeBoard.set('toJSON', {
 	virtuals: true
 });
 

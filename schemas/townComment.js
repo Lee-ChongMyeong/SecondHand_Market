@@ -9,11 +9,11 @@ const townComment = new Schema({
 	date: { type: String, required: true, default: Date.now() },
 });
 
-user.virtual('commentId').get(function () {
+townComment.virtual('commentId').get(function () {
 	return this._id.toHexString();
 });
 
-user.set('toJSON', {
+townComment.set('toJSON', {
 	virtuals: true
 });
 
