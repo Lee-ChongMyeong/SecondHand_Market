@@ -11,6 +11,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
 
+
 const userRouter = require('./routers/user');
 app.use('/user', [userRouter]);
 
