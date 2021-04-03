@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const exchangeBoard = new Schema({
-	title: { type: String, required: true },
-	contents: { type: String, required: true },
-	price: { type: String, required: true },
+	title: { type: String },
+	contents: { type: String },
+	price: { type: String },
 	nickname: { type: String},
 	loveCount: { type: Number, default: 0 },
 	area: { type: String},
