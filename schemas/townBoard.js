@@ -2,13 +2,12 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const townBoard = new Schema({
-	blogContents: { type: String, required: true },
+	contents: { type: String, required: true },
 	nickname: { type: String, required: true },
 	commentCount: { type: Number, default: 0 },
 	area: { type: String, required: true },
 	date: { type: String, required: true, default: Date.now() },
-	images: { type: String }, // 수정 필요
-
+	images: { type: Object } // 수정 필요
 });
 
 townBoard.virtual('townId').get(function () {
