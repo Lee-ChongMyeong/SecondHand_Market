@@ -13,7 +13,7 @@ router.post('/', async(req, res)=>{
 
 //중고거래 데이터 뷰
 router.get('/', async(req, res)=> {
-    const exchangeBoardData = await exchangeBoard.find({});
+    const exchangeBoardData = await exchangeBoard.find({})
 
     res.json({exchangeBoardData: exchangeBoardData})
 } )
