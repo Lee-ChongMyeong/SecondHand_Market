@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
+
 const userRouter = require('./routers/user');
 app.use('/user', [userRouter]);
 
@@ -19,6 +20,7 @@ app.use('/exchange', [exchangeRouter]);
 
 const townRouter = require('./routers/town');
 app.use('/town', [townRouter]);
+
 
 
 app.listen(port, () => {
