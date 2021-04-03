@@ -19,4 +19,4 @@ townBoard.set('toJSON', {
 	virtuals: true
 });
 
-module.exports = mongoose.model('TownBoard', townBoard);
+module.exports = mongoose.model('TownBoard', townBoard)
