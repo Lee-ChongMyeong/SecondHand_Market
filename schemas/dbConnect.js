@@ -1,15 +1,20 @@
 const mongoose = require('mongoose');
-require("dotenv").config()
+require('dotenv').config();
 
 const connect = () => {
-	console.log(process.env.DB_PORT)
 	mongoose
-		.connect(`mongodb://localhost:${process.env.DB_PORT}/Carrot`, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useCreateIndex: true,
-			ignoreUndefined: true
-		})
+		.connect(
+			`mongodb://${process.env.DB_SERVER}:
+				${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
+			{
+				useNewUrlParser: true,
+				useUnifiedTopology: true,
+				useCreateIndex: true,
+				ignoreUndefined: true,
+				user: `${process.env.DB_ID}`,
+				pass: `${process.env.DB_PASS}`
+			}
+		)
 		.catch((err) => console.error(err));
 };
 

@@ -11,11 +11,11 @@ const townBoard = new Schema({
 
 });
 
-user.virtual('townId').get(function () {
+townBoard.virtual('townId').get(function () {
 	return this._id.toHexString();
 });
 
-user.set('toJSON', {
+townBoard.set('toJSON', {
 	virtuals: true
 });
 
