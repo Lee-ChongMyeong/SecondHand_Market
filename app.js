@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 require("dotenv").config()
-console.log(process.env.SECRET_KEY);
 const port = process.env.EXPRESS_PORT;
 
 const connect = require('./schemas/dbConnect');
