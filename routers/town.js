@@ -80,6 +80,6 @@ router.get('/:townId', async (req, res) => {
 	}
 	console.log(result);
 	res.json(result);
-});
+})
 
 module.exports = router;
