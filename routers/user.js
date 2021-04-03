@@ -5,7 +5,7 @@ const router = express.Router();
 const mongoose = require('mongoose')
 const authMiddleware = require("../middlewares/auth-middleware")
 const bcrypt = require('bcrypt'); 
-
+require("dotenv").config()
 
 //// [회원가입]
 router.post("/register", async (req, res) => {
@@ -27,7 +27,11 @@ router.post("/register", async (req, res) => {
         return; 
     }
 
-    const user = new User({ id, nickname, password})
+    const user = new User({
+        id,
+        password : bcrypt.hashSync(password, 10),
+        nickname});
+
     await user.save();
 
     res.status(201).send({});
@@ -47,24 +51,22 @@ router.post("/", async (req, res) => {
         });
         return;
     }
-  
-    const token = jwt.sign({ userId : user.userId }, "fake_carrot_market")    
-                                                                        
-    res.send({                                                            
-        token,
-    });
-  });
-  
 
-//// [미들웨어]
-router.get("/users/me", authMiddleware, async(req, res) =>{ 
-    console.log(res.locals);                                
-    const { user } = res.locals;    
-    console.log(user);             
-    
-    res.send({  
-        user
-    }) 
-})
+    if(user) {
+        await bcrypt.compare(password, user.password, (err, match) => {
+
+            if(match){
+                const token = jwt.sign({ userId : user.userId }, process.SECRET_KEY );    
+                res.send({                                                            
+                    token,
+                });
+            }else{
+                res.send("not match");
+            }
+
+        }
+    )}                                                                 
+});
+  
 
 module.exports = router;
