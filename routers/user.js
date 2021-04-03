@@ -56,15 +56,5 @@ router.post("/", async (req, res) => {
   });
   
 
-//// [미들웨어]
-router.get("/users/me", authMiddleware, async(req, res) =>{ 
-    console.log(res.locals);                                
-    const { user } = res.locals;    
-    console.log(user);             
-    
-    res.send({  
-        user
-    }) 
-})
 
 module.exports = router;
