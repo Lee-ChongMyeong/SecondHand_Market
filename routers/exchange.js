@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const sanitizeHtml = require('sanitize-html');
 const exchangeBoard = require('../schemas/exchangeBoard')
 
 function calTime(before) {
@@ -19,6 +20,7 @@ router.post('/', async (req, res) => {
 	let result = { status: 'success' };
 	const nickname = 'junhee916'; // 토큰으로 받아올 임시 데이터
 	const area = '강남구';
+	const soldState = 1;
 	try {
 		await exchangeBoard.create({
 			contents: req.body['contents'],
@@ -26,7 +28,8 @@ router.post('/', async (req, res) => {
 			nickname: nickname,
 			date: Date.now(),
 			area: area,
-			images: ['파일1', '파일2', '파일이름3']
+			images: req.body['images'],
+			soldState: soldState
 		});
 	} catch (err) {
 		result['status'] = 'fail';
@@ -45,10 +48,12 @@ router.get('/', async(req, res)=> {
 
 			let temp = {
 				exchangeId: exchangeBoards['_id'],
-				nickname: exchangeBoards['nickname'],
-				area: exchangeBoards['area'],
-				contents: exchangeBoards['contents'],
+				nickname: sanitizeHtml(exchangeBoards['nickname']),
+				area: sanitizeHtml(exchangeBoards['area']),
+				contents: sanitizeHtml(exchangeBoards['contents']),
 				date: calTime(exchangeBoards['date']),
+				soldState: sanitizeHtml(exchangeBoards['soldState']),
+				images: ['images']
 			};
 			result['exchangeBoardData'].push(temp);
 		}
@@ -95,4 +100,3 @@ router.delete('/:exchangeId/delete', async(req, res)=>{
 
 
 module.exports = router;
-
