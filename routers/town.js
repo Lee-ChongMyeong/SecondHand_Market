@@ -5,6 +5,7 @@ const TownComment = require('../schemas/townComment');
 const sanitizeHtml = require('sanitize-html');
 const townComment = require('../schemas/townComment');
 const townBoard = require('../schemas/townBoard');
+const authMiddleware = require('../middlewares/auth-middleware');
 
 function calTime(before) {
 	before = parseInt((Date.now() - before) / 1000);
@@ -20,10 +21,12 @@ function calTime(before) {
 }
 
 // 동네생활 글 목록
-router.get('/', async (req, res, next) => {
+router.get('/', authMiddleware, async (req, res, next) => {
 	let result = { status: 'success', boards: [] };
+
 	try {
-		let area = '강남구'; // 임시데이터
+		const user = res.locals.user;
+		let area = user.area;
 		let boards = await TownBoard.find({ area: area }).sort({ date: -1 });
 		for (board of boards) {
 			comment = await TownComment.find({ townId: board['townId'] });
@@ -36,7 +39,8 @@ router.get('/', async (req, res, next) => {
 				date: calTime(board['date']),
 				commentCount: comment.length,
 				imoticon: board['imoticon'],
-				images: board['images']
+				images: board['images'],
+				userId: board['userId']
 			};
 			result['boards'].push(temp);
 		}
@@ -47,18 +51,19 @@ router.get('/', async (req, res, next) => {
 });
 
 // 동네생활 글 추가
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
 	let result = { status: 'success' };
 	try {
-		const nickname = '키티'; // 토큰으로 받아올 임시 데이터
-		const area = '강남구';
+		const user = res.locals.user;
+		console.log(user);
 		await TownBoard.create({
 			contents: req.body['contents'],
 			category: req.body['category'],
-			nickname: nickname,
+			nickname: user.nickname,
+			userId: user.id,
 			date: Date.now(),
-			area: area,
-			images: req.body['images'],
+			area: user.area,
+			images: req.body['images']
 		});
 	} catch (err) {
 		result['status'] = 'fail';
@@ -67,19 +72,26 @@ router.post('/', async (req, res) => {
 });
 
 // 동네생활 글 수정
-router.put('/:townId', async (req, res) => {
+router.put('/:townId', authMiddleware, async (req, res) => {
 	let result = { status: 'success' };
 	try {
+		const user = res.locals.user;
 		const townId = req.params.townId;
-		if (req.body["images"]) {
-			await TownBoard.updateOne({_id:townId},{
-				contents: sanitizeHtml(req.body.contents),
-				images : req.body.images
-				});
+		if (req.body['images']) {
+			await TownBoard.updateOne(
+				{ _id: townId, userId: user.id },
+				{
+					contents: sanitizeHtml(req.body.contents),
+					images: req.body.images
+				}
+			);
 		} else {
-			await TownBoard.updateOne({_id:townId},{
-				contents: sanitizeHtml(req.body.contents)
-				});
+			await TownBoard.updateOne(
+				{ _id: townId, userId: user.id },
+				{
+					contents: sanitizeHtml(req.body.contents)
+				}
+			);
 		}
 	} catch (err) {
 		result['status'] = 'fail';
@@ -88,12 +100,12 @@ router.put('/:townId', async (req, res) => {
 });
 
 // 동네생활 글 상세 정보
-router.get('/:townId', async (req, res) => {
+router.get('/:townId', authMiddleware, async (req, res) => {
 	let result = { status: 'success' };
 	try {
 		const townId = req.params.townId;
 		board = await TownBoard.findOne({ _id: townId });
-		comment = await TownComment.find({townId})
+		comment = await TownComment.find({ townId });
 		result['board'] = {
 			townId: sanitizeHtml(board['_id']),
 			nickname: sanitizeHtml(board['nickname']),
@@ -110,12 +122,13 @@ router.get('/:townId', async (req, res) => {
 });
 
 //동네생활 글 삭제
-router.delete('/:townId', async (req, res, next) => {
+router.delete('/:townId', authMiddleware, async (req, res, next) => {
 	let result = { status: 'success' };
 	try {
 		const townId = req.params.townId;
-		await TownBoard.deleteOne({_id: townId})
-		await TownComment.deleteMany({townId:townId});
+		const user = res.locals.user;
+		await TownBoard.deleteOne({ _id: townId, userId: user.id });
+		await TownComment.deleteMany({ townId: townId });
 	} catch (err) {
 		result['status'] = 'fail';
 	}
@@ -123,14 +136,14 @@ router.delete('/:townId', async (req, res, next) => {
 });
 
 // 동네생활 글에 대한 댓글 리스트
-router.get('/:townId/comment', async (req, res, next) => {
+router.get('/:townId/comment', authMiddleware, async (req, res, next) => {
 	const townId = req.params.townId;
 	let result = { status: 'success', comments: [] };
 	try {
 		let comments = await TownComment.find({ townId: townId }).sort({ date: -1 });
 		for (comment of comments) {
 			let temp = {
-				commentId : comment.commentId,
+				commentId: comment.commentId,
 				townId: townId,
 				commentContents: sanitizeHtml(comment.commentContents),
 				nickname: sanitizeHtml(comment.nickname),
@@ -146,18 +159,16 @@ router.get('/:townId/comment', async (req, res, next) => {
 });
 
 // 동네생활 글에 대한 댓글 작성
-router.post('/:townId/comment', async (req, res, next) => {
+router.post('/:townId/comment', authMiddleware, async (req, res, next) => {
 	let result = { status: 'success' };
 
 	try {
-		const townId = req.params.townId;
-		const nickname = '테스트!';
-		const userId = '5413sdfasadf234';
+		const user = res.locals.user;
 		await TownComment.create({
-			townId: townId,
+			townId: req.params.townId,
 			commentContents: req.body.commentContents,
-			nickname: nickname,
-			userId: userId,
+			nickname: user.nickname,
+			userId: user.id,
 			date: Date.now()
 		});
 	} catch (err) {
@@ -167,11 +178,12 @@ router.post('/:townId/comment', async (req, res, next) => {
 });
 
 //동네생활 글에 대한 댓글 삭제
-router.delete('/comment/:commentId', async (req, res, next) => {
+router.delete('/comment/:commentId', authMiddleware, async (req, res, next) => {
 	let result = { status: 'success' };
 	try {
+		const user = res.locals.user;
 		const commentId = req.params.commentId;
-		await TownComment.deleteOne({ _id: commentId });
+		await TownComment.deleteOne({ _id: commentId, userId: user.id });
 	} catch (err) {
 		result['status'] = 'fail';
 	}

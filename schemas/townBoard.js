@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 const townBoard = new Schema({
 	contents: { type: String, required: true },
 	nickname: { type: String, required: true },
+	userId: { type: String, required: true },
 	category: { type: String, required: true },
 	area: { type: String, required: true },
 	date: { type: String, required: true, default: Date.now() },
