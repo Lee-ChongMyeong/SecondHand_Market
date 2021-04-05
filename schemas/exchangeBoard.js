@@ -10,7 +10,7 @@ const exchangeBoard = new Schema({
 	area: { type: String},
 	date: { type: String, required: true, default: Date.now() },
 	soldState: { type: String},
-	images: { type: String }, // 수정 필요
+	images: { type: Array }, // 수정 필요
 
 });
 

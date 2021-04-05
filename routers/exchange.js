@@ -2,20 +2,61 @@ const express = require('express');
 const router = express.Router();
 const exchangeBoard = require('../schemas/exchangeBoard')
 
+function calTime(before) {
+	before = parseInt((Date.now() - before) / 1000);
+	let result = '';
+	if (before > 60 * 60 * 24 * 365) result = parseInt(before / (60 * 60 * 24 * 365)) + '년 전';
+	else if (before > 60 * 60 * 24 * 31) result = parseInt(before / (60 * 60 * 24 * 31)) + '달 전';
+	else if (before > 60 * 60 * 24) result = parseInt(before / (60 * 60 * 24)) + '일 전';
+	else if (before > 60 * 60) result = parseInt(before / (60 * 60)) + '시간 전';
+	else if (before > 60) result = parseInt(before / 60) + '분 전';
+	else result = parseInt(before) + '초 전';
+
+	return result;
+}
 //중고거래 데이터 저장
-router.post('/', async(req, res)=>{
-    const {images, title, price, contents} = req.body
-
-    await exchangeBoard.create({images, title, price, contents})
-
-    console.log("추가 완료")
-})
+router.post('/', async (req, res) => {
+	let result = { status: 'success' };
+	const nickname = 'junhee916'; // 토큰으로 받아올 임시 데이터
+	const area = '강남구';
+	try {
+		await exchangeBoard.create({
+			contents: req.body['contents'],
+            title: req.body['title'],
+			nickname: nickname,
+			date: Date.now(),
+			area: area,
+			images: ['파일1', '파일2', '파일이름3']
+		});
+	} catch (err) {
+		result['status'] = 'fail';
+	}
+	res.json(result);
+});
 
 //중고거래 데이터 뷰
 router.get('/', async(req, res)=> {
-    const exchangeBoardData = await exchangeBoard.find({})
+    let area = '강남구'; // 임시데이터
+	let result = { status: 'success', exchangeBoardData: [] };
+	try {
+		let exchangeBoardData = await exchangeBoard.find({area: area}).sort({ date: -1 });
+		console.log(exchangeBoardData)
+		for (exchangeBoards of exchangeBoardData) {
 
-    res.json({exchangeBoardData: exchangeBoardData})
+			let temp = {
+				exchangeId: exchangeBoards['_id'],
+				nickname: exchangeBoards['nickname'],
+				area: exchangeBoards['area'],
+				contents: exchangeBoards['contents'],
+				date: calTime(exchangeBoards['date']),
+			};
+			result['exchangeBoardData'].push(temp);
+		}
+	} catch (err) {
+		console.log(err)
+		result['status'] = 'fail';
+	}
+	res.json(result);
 } )
 
 //중고거래 상세 페이지 뷰
@@ -25,7 +66,7 @@ router.get('/:exchangeId', async(req, res)=> {
     const exchangeDetail = await exchangeBoard.find({exchangeId: exchangeId})
 
     if(exchangeDetail.length>0){
-        await exchangeBoard.create({images, title, price, contents})
+        await exchangeBoard.create({title, price, contents, nickname, area})
     }
 
     res.json({exchangeDetail: exchangeDetail})
