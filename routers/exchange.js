@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const exchangeBoard = require('../schemas/exchangeBoard')
 
+function calTime(before) {
+	before = parseInt((Date.now() - before) / 1000);
+	let result = '';
+	if (before > 60 * 60 * 24 * 365) result = parseInt(before / (60 * 60 * 24 * 365)) + '년 전';
+	else if (before > 60 * 60 * 24 * 31) result = parseInt(before / (60 * 60 * 24 * 31)) + '달 전';
+	else if (before > 60 * 60 * 24) result = parseInt(before / (60 * 60 * 24)) + '일 전';
+	else if (before > 60 * 60) result = parseInt(before / (60 * 60)) + '시간 전';
+	else if (before > 60) result = parseInt(before / 60) + '분 전';
+	else result = parseInt(before) + '초 전';
+
+	return result;
+}
 //중고거래 데이터 저장
 router.post('/', async (req, res) => {
 	let result = { status: 'success' };
@@ -23,22 +35,25 @@ router.post('/', async (req, res) => {
 });
 
 //중고거래 데이터 뷰
-router.get('/', async(req, res, next)=> {
+router.get('/', async(req, res)=> {
     let area = '강남구'; // 임시데이터
 	let result = { status: 'success', exchangeBoardData: [] };
 	try {
-		let exchangeBoardData = await exchangeBoard.find({area: area}).sort({ _id: -1 });
-		for (exchangeBoard of exchangeBoardData) {
+		let exchangeBoardData = await exchangeBoard.find({area: area}).sort({ date: -1 });
+		console.log(exchangeBoardData)
+		for (exchangeBoards of exchangeBoardData) {
+
 			let temp = {
-				exchangeBoardId: exchangeBoard['_id'],
-				nickname: exchangeBoard['nickname'],
-				area: exchangeBoard['area'],
-				contents: exchangeBoard['contents'],
-				date: calTime(exchangeBoard['date']),
+				exchangeId: exchangeBoards['_id'],
+				nickname: exchangeBoards['nickname'],
+				area: exchangeBoards['area'],
+				contents: exchangeBoards['contents'],
+				date: calTime(exchangeBoards['date']),
 			};
 			result['exchangeBoardData'].push(temp);
 		}
 	} catch (err) {
+		console.log(err)
 		result['status'] = 'fail';
 	}
 	res.json(result);
