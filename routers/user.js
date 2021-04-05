@@ -9,28 +9,35 @@ require("dotenv").config()
 
 //// [회원가입]
 router.post("/register", async (req, res) => {
-    const { id, password, confirmPassword,nickname} = req.body;
+    const { id, password, confirmPassword, nickname, area} = req.body;
 
+    if (!(id && password && confirmPassword && nickname && area)) {
+		res.json({ msg: 'empty' });
+		return;
+	}
     if (password !== confirmPassword) {
-        res.json({ msg : 'fail' })
+        res.json({ msg : 'not_match' })
         return;
     }
     const existUsers = await User.findOne({
         $or : [{ id }, { nickname }],
     });
     if (existUsers){
-        res.json({ msg : 'fail' })
+        res.json({ msg : 'exist_user' })
         return;
     }
-
-    const user = new User({
-        id,
-        password : bcrypt.hashSync(password, 10),
-        nickname});
-
-    await user.save();
-
-    res.status(201).send({});
+    try{
+        await User.create({
+            id,
+            password : bcrypt.hashSync(password, 10),
+            nickname,
+            area
+        })
+    }catch{
+        res.json({ msg : 'error' });
+        return
+    }
+    res.json({ msg : 'success' })
 });
 
 
