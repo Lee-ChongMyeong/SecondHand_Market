@@ -7,7 +7,7 @@ const townBoard = new Schema({
 	commentCount: { type: Number, default: 0 },
 	area: { type: String, required: true },
 	date: { type: String, required: true, default: Date.now() },
-	images: { type: Object } // 수정 필요
+	images: { type: Array } // 수정 필요
 });
 
 townBoard.virtual('townId').get(function () {

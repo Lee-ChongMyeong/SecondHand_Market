@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const TownBoard = require('../schemas/townBoard');
 const TownComment = require('../schemas/townComment');
-const moment = require('moment');
 const sanitizeHtml = require('sanitize-html');
+
 
 function calTime(before) {
 	before = parseInt((Date.now() - before) / 1000);
@@ -68,11 +68,11 @@ router.get('/:townId', async (req, res) => {
 	try {
 		board = await TownBoard.findOne({ _id: townId });
 		result['board'] = {
-			townId: board['_id'],
-			nickname: board['nickname'],
+			townId: sanitizeHtml(board['_id']),
+			nickname: sanitizeHtml(board['nickname']),
 			beforeTime: calTime(board['date']),
-			area: board['area'],
-			contents: board['contents'],
+			area: sanitizeHtml(board['area']),
+			contents: sanitizeHtml(board['contents']),
 			images: board['images']
 		};
 	} catch (err) {
@@ -80,6 +80,7 @@ router.get('/:townId', async (req, res) => {
 	}
 	console.log(result);
 	res.json(result);
-})
+});
+
 
 module.exports = router;
