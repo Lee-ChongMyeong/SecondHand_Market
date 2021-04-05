@@ -3,19 +3,45 @@ const router = express.Router();
 const exchangeBoard = require('../schemas/exchangeBoard')
 
 //중고거래 데이터 저장
-router.post('/', async(req, res)=>{
-    const {images, title, price, contents} = req.body
-
-    await exchangeBoard.create({images, title, price, contents})
-
-    console.log("추가 완료")
-})
+router.post('/', async (req, res) => {
+	let result = { status: 'success' };
+	const nickname = 'junhee916'; // 토큰으로 받아올 임시 데이터
+	const area = '강남구';
+	try {
+		await exchangeBoard.create({
+			contents: req.body['contents'],
+            title: req.body['title'],
+			nickname: nickname,
+			date: Date.now(),
+			area: area,
+			images: ['파일1', '파일2', '파일이름3']
+		});
+	} catch (err) {
+		result['status'] = 'fail';
+	}
+	res.json(result);
+});
 
 //중고거래 데이터 뷰
-router.get('/', async(req, res)=> {
-    const exchangeBoardData = await exchangeBoard.find({})
-
-    res.json({exchangeBoardData: exchangeBoardData})
+router.get('/', async(req, res, next)=> {
+    let area = '강남구'; // 임시데이터
+	let result = { status: 'success', exchangeBoardData: [] };
+	try {
+		let exchangeBoardData = await exchangeBoard.find({area: area}).sort({ _id: -1 });
+		for (exchangeBoard of exchangeBoardData) {
+			let temp = {
+				exchangeBoardId: exchangeBoard['_id'],
+				nickname: exchangeBoard['nickname'],
+				area: exchangeBoard['area'],
+				contents: exchangeBoard['contents'],
+				date: calTime(exchangeBoard['date']),
+			};
+			result['exchangeBoardData'].push(temp);
+		}
+	} catch (err) {
+		result['status'] = 'fail';
+	}
+	res.json(result);
 } )
 
 //중고거래 상세 페이지 뷰
@@ -25,7 +51,7 @@ router.get('/:exchangeId', async(req, res)=> {
     const exchangeDetail = await exchangeBoard.find({exchangeId: exchangeId})
 
     if(exchangeDetail.length>0){
-        await exchangeBoard.create({images, title, price, contents})
+        await exchangeBoard.create({title, price, contents, nickname, area})
     }
 
     res.json({exchangeDetail: exchangeDetail})
