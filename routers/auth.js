@@ -11,26 +11,35 @@ require("dotenv").config()
 router.post("/", async (req, res) => {
     const { id, password } = req.body;
 
-    const user = await User.findOne({ id}).exec();
+    try{
+        const user = await User.findOne({ id }).exec();
 
-    if (!id || !password) {
-		res.json({ msg : 'fail' });
-		return;
-	}
-
-    if(user) {
-        await bcrypt.compare(password, user.password, (err, match) => {
-
-            if(match){
-                const token = jwt.sign({ userId : user.userId }, process.env.SECRET_KEY );
-                res.json({ msg : 'success', token})
-            }else{
-                res.json({ msg : 'fail' });
-            }
+        if (!id || !password) {
+            res.json({ msg : 'fail' });
+            return;
         }
-    )}else{
+
+        if (id != user.id) {
+            res.json({ msg : 'fail' });
+            return;
+        }
+
+        
+        if(user) {
+            await bcrypt.compare(password, user.password, (err, match) => {
+
+                if(match){
+                    const token = jwt.sign({ userId : user.userId }, process.env.SECRET_KEY );
+                    res.json({ msg : 'success', token})
+                }else{
+                    res.json({ msg : 'fail' });
+                }
+            }
+        )}
+
+    }catch{
         res.json({ msg : "fail" });
-    }
-});
+        }
+    });
 
 module.exports = router;

@@ -4,6 +4,7 @@ const User = require('../schemas/user');
 const router = express.Router();
 const authMiddleware = require('../middlewares/auth-middleware');
 const bcrypt = require('bcrypt');
+const sanitizeHtml = require('sanitize-html');
 require('dotenv').config();
 
 //// [회원가입]
@@ -19,20 +20,22 @@ router.post('/', async (req, res) => {
 		res.json({ msg: 'not_match' });
 		return;
 	}
-	const existUsers = await User.findOne({
-		$or: [{ id }, { nickname }]
-	});
-	if (existUsers) {
-		res.json({ msg: 'exist_user' });
-		return;
-	}
 
 	try {
+		const existUsers = await User.findOne({
+			$or: [{ id }, { nickname }]
+		});
+
+		if (existUsers) {
+			res.json({ msg: 'exist_user' });
+			return;
+		}
+		
 		await User.create({
-			id,
+			id : sanitizeHtml(id),
 			password: bcrypt.hashSync(password, 10),
-			nickname,
-			area
+			nickname : sanitizeHtml(nickname),
+			area : sanitizeHtml(area)
 		});
 	} catch {
 		res.json({ msg: 'error' });
