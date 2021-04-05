@@ -58,7 +58,7 @@ router.post('/', async (req, res) => {
 			nickname: nickname,
 			date: Date.now(),
 			area: area,
-			images: []
+			images: req.body['images'],
 		});
 	} catch (err) {
 		result['status'] = 'fail';
