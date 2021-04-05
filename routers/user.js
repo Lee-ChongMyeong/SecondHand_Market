@@ -9,7 +9,7 @@ require("dotenv").config()
 
 //// [회원가입]
 router.post("/register", async (req, res) => {
-    const { id, password, confirmPassword,nickname, area} = req.body;
+    const { id, password, confirmPassword, nickname, area} = req.body;
 
     if (!(id && password && confirmPassword && nickname && area)) {
 		res.json({ msg: 'empty' });
@@ -30,7 +30,6 @@ router.post("/register", async (req, res) => {
         await User.create({
             id,
             password : bcrypt.hashSync(password, 10),
-            confirmPassword,
             nickname,
             area
         })
