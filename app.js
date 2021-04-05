@@ -15,6 +15,9 @@ app.use(express.static('public'));
 const userRouter = require('./routers/user');
 app.use('/user', [userRouter]);
 
+const authRouter = require('./routers/auth');
+app.use('/auth', [authRouter]);
+
 const exchangeRouter = require('./routers/exchange');
 app.use('/exchange', [exchangeRouter]);
 
