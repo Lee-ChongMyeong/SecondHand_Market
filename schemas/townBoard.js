@@ -7,7 +7,7 @@ const townBoard = new Schema({
 	category: { type: String, required: true },
 	area: { type: String, required: true },
 	date: { type: String, required: true, default: Date.now() },
-	images: { type: Array } // 수정 필요
+	images: { type: Array, default: [] } // 수정 필요
 });
 
 townBoard.virtual('townId').get(function () {

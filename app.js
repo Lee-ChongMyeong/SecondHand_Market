@@ -6,11 +6,12 @@ const port = process.env.EXPRESS_PORT;
 const connect = require('./schemas/dbConnect');
 connect();
 
+const cors = require('cors')
+app.use(cors())
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
-
-
 
 const userRouter = require('./routers/user');
 app.use('/user', [userRouter]);
