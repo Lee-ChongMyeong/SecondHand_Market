@@ -19,7 +19,6 @@ module.exports = (req, res, next) => {
         const { userId } = jwt.verify(tokenValue, process.env.SECRET_KEY)  
 
         User.findById(userId, {_id : true, id : true, nickname : true, area : true }).exec().then((user) => {
-            console.log(user)
             res.locals.user = user
             next();
         });
