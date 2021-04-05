@@ -21,6 +21,8 @@ app.use('/exchange', [exchangeRouter]);
 const townRouter = require('./routers/town');
 app.use('/town', [townRouter]);
 
+const imageRouter = require('./routers/image');
+app.use('/image', [imageRouter]);
 
 
 app.listen(port, () => {
