@@ -12,18 +12,14 @@ router.post("/register", async (req, res) => {
     const { id, password, confirmPassword,nickname} = req.body;
 
     if (password !== confirmPassword) {
-        res.status(400).send({
-            errorMessage : '패스워드가 패스워드 확인란과 동일하지 않습니다.',
-        });
+        res.json({ msg : 'fail' })
         return;
     }
     const existUsers = await User.findOne({
         $or : [{ id }, { nickname }],
     });
     if (existUsers){
-        res.status(400).send({
-            errorMessage : '이미 가입된 이메일 또는 닉네임이 있습니다.',
-        });
+        res.json({ msg : 'fail' })
         return;
     }
 
@@ -43,12 +39,15 @@ router.post("/register", async (req, res) => {
 router.post("/", async (req, res) => {
     const { id, password } = req.body;
 
-    const user = await User.findOne({ id, password}).exec();
+    const user = await User.findOne({ id, password }).exec();
+
+    if (!id || !password) {
+		res.json({ msg : 'fail' });
+		return;
+	}
 
     if (!user || password !== user.password) {
-        res.status(400).send({
-            errorMessage : '이메일 또는 패스워드가 잘못됐습니다.'
-        });
+        res.json({ msg : 'fail' })
         return;
     }
 
@@ -57,16 +56,20 @@ router.post("/", async (req, res) => {
 
             if(match){
                 const token = jwt.sign({ userId : user.userId }, process.SECRET_KEY );
-                res.send({
-                    token,
-                });
+                res.json({ msg : 'success', token})
             }else{
-                res.send("not match");
+                res.json({ msg : 'fail' });
             }
-
         }
-    )}
+    )}else{
+        res.json({ msg : "fail" });
+    }
 });
+
+//// [내정보 조회]
+router.get("/users/me", authMiddleware, async (req, res) => {
+    res.send({ user: res.locals.user });
+  });
 
 
 module.exports = router;
