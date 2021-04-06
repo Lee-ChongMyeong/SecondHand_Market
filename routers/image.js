@@ -9,18 +9,28 @@ const storage = multer.diskStorage({
 		cb(null, 'public/');
 	},
 	filename: function (req, file, cb) {
-		cb(null, 'img' + Date.now() + '_' + file.originalname);
+		let ex = file.originalname.split('.');
+		cb(null, 'img' + Date.now() + parseInt(Math.random() * (99 - 10) + 10) + '.' + ex[ex.length - 1]);
 	}
 });
 
-const upload = multer({ storage: storage });
+function fileFilter(req, file, cb) {
+	const fileType = file.mimetype.split('/')[0] == 'image';
+	if (fileType) cb(null, true);
+	else cb(null, false);
+}
+
+const upload = multer({
+	storage: storage,
+	fileFilter: fileFilter
+});
 
 router.post('/', upload.array('images'), authMiddleware, async (req, res) => {
 	result = { status: 'success', images: [] };
 	try {
 		if (req.files) {
 			for (value of req.files) {
-				result['images'].push("http://3.34.198.18:20001/" + value.filename);
+				result['images'].push('http://3.34.198.18:20001/' + value.filename);
 			}
 		}
 	} catch (err) {
