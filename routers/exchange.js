@@ -16,7 +16,7 @@ function calTime(before) {
 
 	return result;
 }
-//중고거래 데이터 저장
+//중고거래 글 추가
 router.post('/', authMiddleware, async (req, res) => {
 	let result = { status: 'success' };
 	const soldState = 1;
@@ -37,7 +37,7 @@ router.post('/', authMiddleware, async (req, res) => {
 	res.json(result);
 });
 
-//중고거래 데이터 뷰
+//중고거래 글 조회
 router.get('/', authMiddleware, async(req, res)=> {
 	const user = res.locals.user;
 	let area = user.area;
@@ -65,7 +65,7 @@ router.get('/', authMiddleware, async(req, res)=> {
 	res.json(result);
 } )
 
-//중고거래 상세 페이지 뷰
+//중고거래 글 상세 정보
 router.get('/:exchangeId', authMiddleware, async(req, res)=> {
     const {exchangeId} = req.params
 
@@ -93,7 +93,7 @@ router.get('/:exchangeId', authMiddleware, async(req, res)=> {
     res.json(result)
 })
 
-//중고거래 상세 페이지 수정
+//중고거래 글 수정
 router.patch('/:exchangeId', authMiddleware, async(req, res, next)=> {
 	let result = { status: 'success' };
     const {exchangeId} = req.params
@@ -105,7 +105,7 @@ router.patch('/:exchangeId', authMiddleware, async(req, res, next)=> {
 
 })
 
-//중고거래 상세 페이지 제거
+//중고거래 글 삭제
 router.delete('/:exchangeId', authMiddleware, async(req, res)=>{
 	let result = { status: 'success' };
 
