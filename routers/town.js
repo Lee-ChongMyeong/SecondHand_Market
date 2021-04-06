@@ -3,8 +3,6 @@ const router = express.Router();
 const TownBoard = require('../schemas/townBoard');
 const TownComment = require('../schemas/townComment');
 const sanitizeHtml = require('sanitize-html');
-const townComment = require('../schemas/townComment');
-const townBoard = require('../schemas/townBoard');
 const authMiddleware = require('../middlewares/auth-middleware');
 
 function calTime(before) {
@@ -23,11 +21,18 @@ function calTime(before) {
 // 동네생활 글 목록
 router.get('/', authMiddleware, async (req, res, next) => {
 	let result = { status: 'success', boards: [] };
-
 	try {
-		const user = res.locals.user;
+		const user = res.locals.user; // 현재 접속 유저 정보
+		const print_count = 5
 		let area = user.area;
-		let boards = await TownBoard.find({ area: area }).sort({ date: -1 });
+		let lastId = req.body["lastId"]; // 무한 스크롤 마지막으로 불러온 글 ID
+		let boards;
+		if (lastId) { // 무한 스크롤 이전 페이지가 있을 경우
+			boards = await TownBoard.find({ area: area }).sort({ date: -1 })
+				.where('_id').lt(lastId).limit(print_count);
+		} else { // 무한 스크롤 첫 페이지일 경우
+			boards = await TownBoard.find({ area: area }).sort({ date: -1 }).limit(print_count);
+		}
 		for (board of boards) {
 			comment = await TownComment.find({ townId: board['townId'] });
 			let temp = {
@@ -44,6 +49,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
 			};
 			result['boards'].push(temp);
 		}
+		if (boards.length < print_count) result['status'] = 'end';
 	} catch (err) {
 		result['status'] = 'fail';
 	}
@@ -55,7 +61,6 @@ router.post('/', authMiddleware, async (req, res) => {
 	let result = { status: 'success' };
 	try {
 		const user = res.locals.user;
-		console.log(user);
 		await TownBoard.create({
 			contents: req.body['contents'],
 			category: req.body['category'],
@@ -78,14 +83,15 @@ router.put('/:townId', authMiddleware, async (req, res) => {
 		const user = res.locals.user;
 		const townId = req.params.townId;
 		if (req.body['images']) {
-			const { n } = await TownBoard.updateOne({ _id: townId, userId: user.id },
-				{ contents: sanitizeHtml(req.body.contents), images: req.body.images });
+			const { n } = await TownBoard.updateOne(
+				{ _id: townId, userId: user.id },
+				{ contents: sanitizeHtml(req.body.contents), images: req.body.images }
+			);
 			if (!n) {
 				result['status'] = 'fail';
 			}
 		} else {
-			const { n } = await TownBoard.updateOne({ _id: townId, userId: user.id },
-				{ contents: sanitizeHtml(req.body.contents) });
+			const { n } = await TownBoard.updateOne({ _id: townId, userId: user.id }, { contents: sanitizeHtml(req.body.contents) });
 			if (!n) {
 				result['status'] = 'fail';
 			}
