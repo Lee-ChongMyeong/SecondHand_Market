@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const sanitizeHtml = require('sanitize-html');
-const exchangeBoard = require('../schemas/exchangeBoard')
+const exchangeBoard = require('../schemas/exchangeBoard');
+const authMiddleware = require('../middlewares/auth-middleware')
 
 function calTime(before) {
 	before = parseInt((Date.now() - before) / 1000);
@@ -16,18 +17,17 @@ function calTime(before) {
 	return result;
 }
 //중고거래 데이터 저장
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
 	let result = { status: 'success' };
-	const nickname = 'junhee916'; // 토큰으로 받아올 임시 데이터
-	const area = '강남구';
 	const soldState = 1;
+	const user = res.locals.user;
 	try {
 		await exchangeBoard.create({
 			contents: req.body['contents'],
             title: req.body['title'],
-			nickname: nickname,
+			nickname: user.nickname,
 			date: Date.now(),
-			area: area,
+			area: user.area,
 			images: req.body['images'],
 			soldState: soldState
 		});
@@ -38,8 +38,9 @@ router.post('/', async (req, res) => {
 });
 
 //중고거래 데이터 뷰
-router.get('/', async(req, res)=> {
-    let area = '강남구'; // 임시데이터
+router.get('/', authMiddleware, async(req, res)=> {
+	const user = res.locals.user;
+	let area = user.area;
 	let result = { status: 'success', exchangeBoardData: [] };
 	try {
 		let exchangeBoardData = await exchangeBoard.find({area: area}).sort({ date: -1 });
@@ -53,7 +54,7 @@ router.get('/', async(req, res)=> {
 				contents: sanitizeHtml(exchangeBoards['contents']),
 				date: calTime(exchangeBoards['date']),
 				soldState: sanitizeHtml(exchangeBoards['soldState']),
-				images: ['images']
+				images: exchangeBoards['images']
 			};
 			result['exchangeBoardData'].push(temp);
 		}
@@ -65,37 +66,58 @@ router.get('/', async(req, res)=> {
 } )
 
 //중고거래 상세 페이지 뷰
-router.get('/:exchangeId', async(req, res)=> {
+router.get('/:exchangeId', authMiddleware, async(req, res)=> {
     const {exchangeId} = req.params
 
-    const exchangeDetail = await exchangeBoard.find({exchangeId: exchangeId})
+	try {
+		let exchangeBoardData = await exchangeBoard.find({exchangeId: exchangeId}).sort({ date: -1 });
+		console.log(exchangeBoardData)
+		for (exchangeBoards of exchangeBoardData) {
 
-    if(exchangeDetail.length>0){
-        await exchangeBoard.create({title, price, contents, nickname, area})
-    }
-
-    res.json({exchangeDetail: exchangeDetail})
+			let temp = {
+				exchangeId: exchangeBoards['_id'],
+				nickname: sanitizeHtml(exchangeBoards['nickname']),
+				area: sanitizeHtml(exchangeBoards['area']),
+				contents: sanitizeHtml(exchangeBoards['contents']),
+				date: calTime(exchangeBoards['date']),
+				soldState: sanitizeHtml(exchangeBoards['soldState']),
+				images: exchangeBoards['images']
+			};
+			result['exchangeBoardData'].push(temp);
+		}
+	} catch (err) {
+		console.log(err)
+		result['status'] = 'fail';
+	}
+	
+    res.json(result)
 })
 
 //중고거래 상세 페이지 수정
-router.patch('/:exchangeId/update', async(req, res)=> {
+router.patch('/:exchangeId', authMiddleware, async(req, res, next)=> {
+	let result = { status: 'success' };
     const {exchangeId} = req.params
     const {images, title, price, contents} = req.body
 
-    const exchangeDetail = await exchangeBoard.find({exchangeId: exchangeId})
+	await exchangeBoard.updateOne({_id:exchangeId}, {title, price, images, contents})
+
+	res.json(result)
 
 })
 
 //중고거래 상세 페이지 제거
-router.delete('/:exchangeId/delete', async(req, res)=>{
-    const {exchangeId} = req.params
+router.delete('/:exchangeId', authMiddleware, async(req, res)=>{
+	let result = { status: 'success' };
 
-    const exchangeDetail = await exchangeBoard.find({exchangeId: exchangeId})
+	try {
+		const exchangeIds = req.params.exchangeId;
+		const user = res.locals.user;
+		await exchangeBoard.deleteOne({ _id: exchangeIds, userId: user.id });
 
-    await exchangeDetail.deleteOne({exchangeId})
-
-    console.log("제거 성공")
-
+	} catch (err) {
+		result['status'] = 'fail';
+	}
+	res.json(result);
 })
 
 
