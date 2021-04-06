@@ -78,20 +78,17 @@ router.put('/:townId', authMiddleware, async (req, res) => {
 		const user = res.locals.user;
 		const townId = req.params.townId;
 		if (req.body['images']) {
-			await TownBoard.updateOne(
-				{ _id: townId, userId: user.id },
-				{
-					contents: sanitizeHtml(req.body.contents),
-					images: req.body.images
-				}
-			);
+			const { n } = await TownBoard.updateOne({ _id: townId, userId: user.id },
+				{ contents: sanitizeHtml(req.body.contents), images: req.body.images });
+			if (!n) {
+				result['status'] = 'fail';
+			}
 		} else {
-			await TownBoard.updateOne(
-				{ _id: townId, userId: user.id },
-				{
-					contents: sanitizeHtml(req.body.contents)
-				}
-			);
+			const { n } = await TownBoard.updateOne({ _id: townId, userId: user.id },
+				{ contents: sanitizeHtml(req.body.contents) });
+			if (!n) {
+				result['status'] = 'fail';
+			}
 		}
 	} catch (err) {
 		result['status'] = 'fail';
@@ -127,8 +124,12 @@ router.delete('/:townId', authMiddleware, async (req, res, next) => {
 	try {
 		const townId = req.params.townId;
 		const user = res.locals.user;
-		await TownBoard.deleteOne({ _id: townId, userId: user.id });
-		await TownComment.deleteMany({ townId: townId });
+		const { deletedCount } = await TownBoard.deleteOne({ _id: townId, userId: user.id });
+		if (deletedCount) {
+			await TownComment.deleteMany({ townId: townId });
+		} else {
+			result['status'] = 'fail';
+		}
 	} catch (err) {
 		result['status'] = 'fail';
 	}
@@ -183,7 +184,8 @@ router.delete('/comment/:commentId', authMiddleware, async (req, res, next) => {
 	try {
 		const user = res.locals.user;
 		const commentId = req.params.commentId;
-		await TownComment.deleteOne({ _id: commentId, userId: user.id });
+		const { deletedCount } = await TownComment.deleteOne({ _id: commentId, userId: user.id });
+		if (!deletedCount) result['status'] = 'fail';
 	} catch (err) {
 		result['status'] = 'fail';
 	}
