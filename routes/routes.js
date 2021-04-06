@@ -22,4 +22,4 @@ router.use('/profile', [profileRouter]);
 const commentRouter = require('../routers/comment.js');
 router.use('/comment', [commentRouter]);
 
-module.exports = router
+module.exports = router;

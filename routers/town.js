@@ -4,19 +4,7 @@ const TownBoard = require('../schemas/townBoard');
 const TownComment = require('../schemas/townComment');
 const sanitizeHtml = require('sanitize-html');
 const authMiddleware = require('../middlewares/auth-middleware');
-
-function calTime(before) {
-	before = parseInt((Date.now() - before) / 1000);
-	let result = '';
-	if (before > 60 * 60 * 24 * 365) result = parseInt(before / (60 * 60 * 24 * 365)) + '년 전';
-	else if (before > 60 * 60 * 24 * 31) result = parseInt(before / (60 * 60 * 24 * 31)) + '달 전';
-	else if (before > 60 * 60 * 24) result = parseInt(before / (60 * 60 * 24)) + '일 전';
-	else if (before > 60 * 60) result = parseInt(before / (60 * 60)) + '시간 전';
-	else if (before > 60) result = parseInt(before / 60) + '분 전';
-	else result = parseInt(before) + '초 전';
-
-	return result;
-}
+const calTime = require('./calTime');
 
 // 동네생활 글 목록
 router.get('/', authMiddleware, async (req, res, next) => {
@@ -25,7 +13,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
 		const user = res.locals.user; // 현재 접속 유저 정보
 		const print_count = 5;
 		let area = user.area;
-		let lastId = req.query['lastId'] // 무한 스크롤 마지막으로 불러온 글 ID
+		let lastId = req.query['lastId']; // 무한 스크롤 마지막으로 불러온 글 ID
 		let boards;
 		if (lastId) {
 			// 무한 스크롤 이전 페이지가 있을 경우
@@ -84,7 +72,8 @@ router.put('/:townId', authMiddleware, async (req, res) => {
 		const user = res.locals.user;
 		const townId = req.params.townId;
 		if (req.body['images']) {
-			const { n } = await TownBoard.updateOne( // n은 조회된 데이터 갯수
+			const { n } = await TownBoard.updateOne(
+				// n은 조회된 데이터 갯수
 				{ _id: townId, userId: user.id },
 				{ contents: sanitizeHtml(req.body.contents), images: req.body.images }
 			);

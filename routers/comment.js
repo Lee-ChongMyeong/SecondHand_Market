@@ -3,19 +3,7 @@ const router = express.Router();
 const TownComment = require('../schemas/townComment');
 const sanitizeHtml = require('sanitize-html');
 const authMiddleware = require('../middlewares/auth-middleware');
-
-function calTime(before) {
-	before = parseInt((Date.now() - before) / 1000);
-	let result = '';
-	if (before > 60 * 60 * 24 * 365) result = parseInt(before / (60 * 60 * 24 * 365)) + '년 전';
-	else if (before > 60 * 60 * 24 * 31) result = parseInt(before / (60 * 60 * 24 * 31)) + '달 전';
-	else if (before > 60 * 60 * 24) result = parseInt(before / (60 * 60 * 24)) + '일 전';
-	else if (before > 60 * 60) result = parseInt(before / (60 * 60)) + '시간 전';
-	else if (before > 60) result = parseInt(before / 60) + '분 전';
-	else result = parseInt(before) + '초 전';
-
-	return result;
-}
+const calTime = require('./calTime');
 
 // 동네생활 글에 대한 댓글 리스트
 router.get('/:townId', authMiddleware, async (req, res, next) => {

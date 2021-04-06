@@ -2,34 +2,23 @@ const express = require('express');
 const router = express.Router();
 const sanitizeHtml = require('sanitize-html');
 const exchangeBoard = require('../schemas/exchangeBoard');
-const authMiddleware = require('../middlewares/auth-middleware')
+const authMiddleware = require('../middlewares/auth-middleware');
+const calTime = require('./calTime');
 
-function calTime(before) {
-	before = parseInt((Date.now() - before) / 1000);
-	let result = '';
-	if (before > 60 * 60 * 24 * 365) result = parseInt(before / (60 * 60 * 24 * 365)) + '년 전';
-	else if (before > 60 * 60 * 24 * 31) result = parseInt(before / (60 * 60 * 24 * 31)) + '달 전';
-	else if (before > 60 * 60 * 24) result = parseInt(before / (60 * 60 * 24)) + '일 전';
-	else if (before > 60 * 60) result = parseInt(before / (60 * 60)) + '시간 전';
-	else if (before > 60) result = parseInt(before / 60) + '분 전';
-	else result = parseInt(before) + '초 전';
-
-	return result;
-}
 //중고거래 글 추가
 router.post('/', authMiddleware, async (req, res) => {
 	let result = { status: 'success' };
-	const soldState = 1;
 	const user = res.locals.user;
 	try {
 		await exchangeBoard.create({
 			contents: req.body['contents'],
-            title: req.body['title'],
+			title: req.body['title'],
+			price: req.body['price'],
 			nickname: user.nickname,
+			id: user.id,
 			date: Date.now(),
 			area: user.area,
-			images: req.body['images'],
-			soldState: soldState
+			images: req.body['images']
 		});
 	} catch (err) {
 		result['status'] = 'fail';
@@ -38,18 +27,17 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 //중고거래 글 조회
-router.get('/', authMiddleware, async(req, res)=> {
+router.get('/', authMiddleware, async (req, res) => {
 	const user = res.locals.user;
 	let area = user.area;
 	let result = { status: 'success', exchangeBoardData: [] };
 	try {
-		let exchangeBoardData = await exchangeBoard.find({area: area}).sort({ date: -1 });
-		console.log(exchangeBoardData)
+		let exchangeBoardData = await exchangeBoard.find({ area: area }).sort({ date: -1 });
 		for (exchangeBoards of exchangeBoardData) {
-
 			let temp = {
 				exchangeId: exchangeBoards['_id'],
 				nickname: sanitizeHtml(exchangeBoards['nickname']),
+				userId: sanitizeHtml(exchangeBoards['id']),
 				area: sanitizeHtml(exchangeBoards['area']),
 				contents: sanitizeHtml(exchangeBoards['contents']),
 				date: calTime(exchangeBoards['date']),
@@ -59,24 +47,23 @@ router.get('/', authMiddleware, async(req, res)=> {
 			result['exchangeBoardData'].push(temp);
 		}
 	} catch (err) {
-		console.log(err)
+		console.log(err);
 		result['status'] = 'fail';
 	}
 	res.json(result);
-} )
+});
 
 //중고거래 글 상세 정보
-router.get('/:exchangeId', authMiddleware, async(req, res)=> {
-    const {exchangeId} = req.params
+router.get('/:exchangeId', authMiddleware, async (req, res) => {
+	const { exchangeId } = req.params;
 
 	try {
-		let exchangeBoardData = await exchangeBoard.find({exchangeId: exchangeId}).sort({ date: -1 });
-		console.log(exchangeBoardData)
+		let exchangeBoardData = await exchangeBoard.find({ exchangeId: exchangeId }).sort({ date: -1 });
 		for (exchangeBoards of exchangeBoardData) {
-
 			let temp = {
 				exchangeId: exchangeBoards['_id'],
 				nickname: sanitizeHtml(exchangeBoards['nickname']),
+				userId: exchangeBoard['id'],
 				area: sanitizeHtml(exchangeBoards['area']),
 				contents: sanitizeHtml(exchangeBoards['contents']),
 				date: calTime(exchangeBoards['date']),
@@ -86,39 +73,45 @@ router.get('/:exchangeId', authMiddleware, async(req, res)=> {
 			result['exchangeBoardData'].push(temp);
 		}
 	} catch (err) {
-		console.log(err)
+		console.log(err);
 		result['status'] = 'fail';
 	}
-	
-    res.json(result)
-})
+	res.json(result);
+});
 
 //중고거래 글 수정
-router.patch('/:exchangeId', authMiddleware, async(req, res, next)=> {
+router.put('/:exchangeId', authMiddleware, async (req, res, next) => {
 	let result = { status: 'success' };
-    const {exchangeId} = req.params
-    const {images, title, price, contents} = req.body
+	try {
+		const user = res.locals.user;
+		const { exchangeId } = req.params;
+		const { images, title, price, contents } = req.body;
 
-	await exchangeBoard.updateOne({_id:exchangeId}, {title, price, images, contents})
-
-	res.json(result)
-
-})
+		const { n } = await exchangeBoard.updateOne({ _id: exchangeId, id: user.id }, { title, price, images, contents });
+		if (!n) {
+			result['status'] = 'fail';
+		}
+	} catch (err) {
+		result['status'] = 'fail';
+	}
+	res.json(result);
+});
 
 //중고거래 글 삭제
-router.delete('/:exchangeId', authMiddleware, async(req, res)=>{
+router.delete('/:exchangeId', authMiddleware, async (req, res) => {
 	let result = { status: 'success' };
 
 	try {
 		const exchangeIds = req.params.exchangeId;
 		const user = res.locals.user;
-		await exchangeBoard.deleteOne({ _id: exchangeIds, userId: user.id });
-
+		const { deletedCount } = await exchangeBoard.deleteOne({ _id: exchangeIds, id: user.id });
+		if (!deletedCount) {
+			result['status'] = 'fail';
+		}
 	} catch (err) {
 		result['status'] = 'fail';
 	}
 	res.json(result);
-})
-
+});
 
 module.exports = router;

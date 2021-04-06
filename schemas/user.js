@@ -5,7 +5,7 @@ const user = new Schema({
 	id: { type: String, required: true, unique: true },
 	password: { type: String, required: true },
 	nickname: { type: String, required: true, unique: true },
-	area: { type: String },
+	area: { type: String }
 });
 
 user.virtual('userId').get(function () {

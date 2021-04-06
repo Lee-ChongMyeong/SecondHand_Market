@@ -6,7 +6,7 @@ const townComment = new Schema({
 	commentContents: { type: String, required: true },
 	nickname: { type: String, required: true },
 	userId: { type: String, required: true },
-	date: { type: String, required: true, default: Date.now() },
+	date: { type: String, required: true, default: Date.now() }
 });
 
 townComment.virtual('commentId').get(function () {
