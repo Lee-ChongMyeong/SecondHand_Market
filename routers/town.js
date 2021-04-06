@@ -84,7 +84,7 @@ router.put('/:townId', authMiddleware, async (req, res) => {
 		const user = res.locals.user;
 		const townId = req.params.townId;
 		if (req.body['images']) {
-			const { n } = await TownBoard.updateOne(
+			const { n } = await TownBoard.updateOne( // n은 조회된 데이터 갯수
 				{ _id: townId, userId: user.id },
 				{ contents: sanitizeHtml(req.body.contents), images: req.body.images }
 			);
@@ -137,62 +137,6 @@ router.delete('/:townId', authMiddleware, async (req, res, next) => {
 		} else {
 			result['status'] = 'fail';
 		}
-	} catch (err) {
-		result['status'] = 'fail';
-	}
-	res.json(result);
-});
-
-// 동네생활 글에 대한 댓글 리스트
-router.get('/:townId/comment', authMiddleware, async (req, res, next) => {
-	const townId = req.params.townId;
-	let result = { status: 'success', comments: [] };
-	try {
-		let comments = await TownComment.find({ townId: townId }).sort({ date: -1 });
-		for (comment of comments) {
-			let temp = {
-				commentId: comment.commentId,
-				townId: townId,
-				commentContents: sanitizeHtml(comment.commentContents),
-				nickname: sanitizeHtml(comment.nickname),
-				userId: comment.userId,
-				date: calTime(comment.date)
-			};
-			result['comments'].push(temp);
-		}
-	} catch (err) {
-		result['status'] = 'fail';
-	}
-	res.json(result);
-});
-
-// 동네생활 글에 대한 댓글 작성
-router.post('/:townId/comment', authMiddleware, async (req, res, next) => {
-	let result = { status: 'success' };
-
-	try {
-		const user = res.locals.user;
-		await TownComment.create({
-			townId: req.params.townId,
-			commentContents: req.body.commentContents,
-			nickname: user.nickname,
-			userId: user.id,
-			date: Date.now()
-		});
-	} catch (err) {
-		result['status'] = 'fail';
-	}
-	res.json(result);
-});
-
-//동네생활 글에 대한 댓글 삭제
-router.delete('/comment/:commentId', authMiddleware, async (req, res, next) => {
-	let result = { status: 'success' };
-	try {
-		const user = res.locals.user;
-		const commentId = req.params.commentId;
-		const { deletedCount } = await TownComment.deleteOne({ _id: commentId, userId: user.id });
-		if (!deletedCount) result['status'] = 'fail';
 	} catch (err) {
 		result['status'] = 'fail';
 	}
