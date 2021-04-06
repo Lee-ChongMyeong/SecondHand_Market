@@ -29,7 +29,7 @@ const imageRouter = require('./routers/image');
 app.use('/image', [imageRouter]);
 
 const profileRouter = require('./routers/profile');
-app.use('/profile', [profileRouter]);
+app.use('/profile', [profileRouter]); 
 
 
 app.listen(port, () => {

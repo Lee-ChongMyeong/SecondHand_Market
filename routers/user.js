@@ -23,7 +23,6 @@ function check_id(id) {
 }
 
 
-
 function check_password(id, password) {
 	if (password.length < 4){
 		return false;
@@ -108,5 +107,6 @@ router.post('/', async (req, res) => {
 router.get('/me', authMiddleware, async (req, res) => {
 	res.send({ user: res.locals.user });
 });
+
 
 module.exports = router;
