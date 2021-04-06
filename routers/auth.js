@@ -23,7 +23,6 @@ router.post("/", async (req, res) => {
             res.json({ msg : 'fail' });
             return;
         }
-
         
         if(user) {
             await bcrypt.compare(password, user.password, (err, match) => {
