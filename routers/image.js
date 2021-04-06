@@ -20,7 +20,7 @@ router.post('/', upload.array('images'), authMiddleware, async (req, res) => {
 	try {
 		if (req.files) {
 			for (value of req.files) {
-				result['images'].push(value.filename);
+				result['images'].push("http://3.34.198.18:20001/" + value.filename);
 			}
 		}
 	} catch (err) {

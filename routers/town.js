@@ -23,14 +23,15 @@ router.get('/', authMiddleware, async (req, res, next) => {
 	let result = { status: 'success', boards: [] };
 	try {
 		const user = res.locals.user; // 현재 접속 유저 정보
-		const print_count = 5
+		const print_count = 5;
 		let area = user.area;
-		let lastId = req.body["lastId"]; // 무한 스크롤 마지막으로 불러온 글 ID
+		let lastId = req.body['lastId']; // 무한 스크롤 마지막으로 불러온 글 ID
 		let boards;
-		if (lastId) { // 무한 스크롤 이전 페이지가 있을 경우
-			boards = await TownBoard.find({ area: area }).sort({ date: -1 })
-				.where('_id').lt(lastId).limit(print_count);
-		} else { // 무한 스크롤 첫 페이지일 경우
+		if (lastId) {
+			// 무한 스크롤 이전 페이지가 있을 경우
+			boards = await TownBoard.find({ area: area }).sort({ date: -1 }).where('_id').lt(lastId).limit(print_count);
+		} else {
+			// 무한 스크롤 첫 페이지일 경우
 			boards = await TownBoard.find({ area: area }).sort({ date: -1 }).limit(print_count);
 		}
 		for (board of boards) {
