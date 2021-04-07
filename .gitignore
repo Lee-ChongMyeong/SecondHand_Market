@@ -1,6 +1,7 @@
 # 프로젝트
 package-lock.json
 public/images/
+test.js
 
 # Logs
 logs
