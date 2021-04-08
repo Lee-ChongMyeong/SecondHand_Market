@@ -58,22 +58,19 @@ router.get('/', authMiddleware, async (req, res) => {
 //중고거래 글 상세 정보
 router.get('/:exchangeId', authMiddleware, async (req, res) => {
 	const { exchangeId } = req.params;
-
+	let result = { status: 'success' };
 	try {
-		let exchangeBoardData = await exchangeBoard.find({ exchangeId: exchangeId }).sort({ date: -1 });
-		for (exchangeBoards of exchangeBoardData) {
-			let temp = {
-				exchangeId: exchangeBoards['_id'],
-				nickname: sanitizeHtml(exchangeBoards['nickname']),
-				userId: exchangeBoard['id'],
-				area: sanitizeHtml(exchangeBoards['area']),
-				contents: sanitizeHtml(exchangeBoards['contents']),
-				date: calTime(exchangeBoards['date']),
-				soldState: sanitizeHtml(exchangeBoards['soldState']),
-				images: exchangeBoards['images']
-			};
-			result['exchangeBoardData'].push(temp);
-		}
+		let exchangeBoardData = await exchangeBoard.findOne({ _id: exchangeId });
+		result['exchangeBoardData'] = {
+			exchangeId: exchangeBoardData['_id'],
+			nickname: sanitizeHtml(exchangeBoardData['nickname']),
+			userId: exchangeBoardData['id'],
+			area: sanitizeHtml(exchangeBoardData['area']),
+			contents: sanitizeHtml(exchangeBoardData['contents']),
+			date: calTime(exchangeBoardData['date']),
+			soldState: sanitizeHtml(exchangeBoardData['soldState']),
+			images: exchangeBoardData['images']
+		};
 	} catch (err) {
 		console.log(err);
 		result['status'] = 'fail';
