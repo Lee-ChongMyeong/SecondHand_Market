@@ -4,7 +4,7 @@
   "description": "당근마켓 클론 프로젝트",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -28,5 +28,9 @@
     "multer": "^1.4.2",
     "nodemon": "^2.0.7",
     "sanitize-html": "^2.3.3"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "supertest": "^6.1.3"
   }
 }

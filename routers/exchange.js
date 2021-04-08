@@ -35,13 +35,15 @@ router.get('/', authMiddleware, async (req, res) => {
 		let exchangeBoardData = await exchangeBoard.find({ area: area }).sort({ date: -1 });
 		for (exchangeBoards of exchangeBoardData) {
 			let temp = {
-				exchangeId: exchangeBoards['_id'],
+				title: sanitizeHtml(exchangeBoards['title']),
+				contents: sanitizeHtml(exchangeBoards['contents']),
 				nickname: sanitizeHtml(exchangeBoards['nickname']),
+				price: sanitizeHtml(exchangeBoards['price']),
+				soldState: sanitizeHtml(exchangeBoards['soldState']),
+				exchangeId: exchangeBoards['_id'],
 				userId: sanitizeHtml(exchangeBoards['id']),
 				area: sanitizeHtml(exchangeBoards['area']),
-				contents: sanitizeHtml(exchangeBoards['contents']),
 				date: calTime(exchangeBoards['date']),
-				soldState: sanitizeHtml(exchangeBoards['soldState']),
 				images: exchangeBoards['images']
 			};
 			result['exchangeBoardData'].push(temp);
