@@ -1,7 +1,8 @@
 # 당근마켓 클론코딩
 
 
-![KakaoTalk_20210527_195939625](https://1.bp.blogspot.com/-6IAP9M_fLns/YLHhGIvltTI/AAAAAAAAAVQ/LmSm2Dh4Lz03iyBYTsrUMDZZmNYSgOvQgCLcBGAsYHQ/s2048/%25EC%258D%25B8%25EB%2584%25A4%25EC%259D%25BC.png)
+![20210530_044014 (1)](https://user-images.githubusercontent.com/79817676/120127198-b9040d00-c1f9-11eb-8a99-8ad238d0be0c.png)
+
 
 
 
