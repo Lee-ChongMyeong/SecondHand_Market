@@ -4,27 +4,27 @@
 ![20210530_044014 (1)](https://user-images.githubusercontent.com/79817676/120127198-b9040d00-c1f9-11eb-8a99-8ad238d0be0c.png)
 
 
-## 💡 당근마켓 클론코딩 소개
+## 당근마켓 클론코딩 소개
 - 당근마켓 클론코딩을 진행
 - 중고거래 페이지, 동네생활 페이지 완성
 - 게시글 및 댓글 작성, 수정, 삭제가 가능한 커뮤니티 구현
 
-## 📌 개요 
+## 개요 
 - 이름: 당근마켓 클론코딩
 - 기간: 2021.04.02 ~ 2021.04.08
 - 팀원
   - Front-end(React-Native): 김지하, 신일섭
   - Back-end(Node.js): 조상균, 이총명
 
-## 🔌 개발 환경
+## 개발 환경
 - Server: AWS EC2(Ubuntu 20.04 LTS)
 - Framework: Express(Node.js)
 - Database: MongoDB
 
-## 🔭 주요 라이브러리
+## 주요 라이브러리
  mongoose, jsonwebtoken, multer, sanitize-html, dotenv
 
-## ✨ 주요 기능
+## 주요 기능
 #### 1. 로그인
 - 아이디, 패스워드를 입력하여 로그인 할 수 있고 로그아웃 버튼을 눌러서 나올수 있습니다. (jwt 토큰)
 #### 2. 회원가입
