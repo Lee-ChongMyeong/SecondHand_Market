@@ -63,10 +63,10 @@
 |동네생활 글 정보|GET|/town/:townId| status, board: { townId, nickname, beforeTime, area, commentCount, contents, images: []} |
 |글 삭제 요청|DELETE|/town:townId| |
 |글 수정 요청|PATCH|/town:townId| |
-|댓글 목록|GET|/comment/:townId|| status, comments: [{ commentId, townId, commentContents, nickname, userId },... |
+|댓글 목록|GET|/comment/:townId|status, comments: [{ commentId, townId, commentContents, nickname, userId },... |
 |댓글 추가|POST|/comment/:townId||  |
 |댓글 삭제|DELETE|/comment/:commentId||  |
-|프로필 확인|GET|/profile|| {status, profileData :[{nickname, area, userid}] |
+|프로필 확인|GET|/profile|{status, profileData :[{nickname, area, userid}] |
 |특정 사용자 게시글 검토|GET|/exchange/user/:nickname||  |
 |이미지 업로드 요청|POST|/image|{status, images:["~","~"]}  |
 
