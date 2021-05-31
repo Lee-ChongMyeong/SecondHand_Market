@@ -67,7 +67,6 @@
 |댓글 추가|POST|/comment/:townId||  |
 |댓글 삭제|DELETE|/comment/:commentId||  |
 |프로필 확인|GET|/profile|{status, profileData :[{nickname, area, userid}] |
-|특정 사용자 게시글 검토|GET|/exchange/user/:nickname||  |
 |이미지 업로드 요청|POST|/image|{status, images:["~","~"]}  |
 
 
