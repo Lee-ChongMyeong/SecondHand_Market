@@ -51,7 +51,7 @@
 |:---|:---:|:---:|:---:|
 |접속자 정보|GET|/user|userId, nickname, id, area|
 |회원가입 요청|POST|/| msg : "empty" ||  "not_match" || "incorrect_id" || "incorrect_password" || "incorrect_nickname" "exist_user" || "error" || "success"|
-|로그인 요청|POST|/auth|{ msg : "success" || "fail" }|
+|로그인 요청|POST|/auth| msg : "success" or "fail" |
 |글 목록|GET|/exchange|posts:[{ exchangeId, nickname, title, price, contents, loveCount, area, beforeTime, soldState}]..|
 |중고거래 글 정보|GET|/exchange|exchangeId, title, price, beforeTime , nickname, loveCount, area, contents , img:[이미지1,2...], soldState|
 |판매상태 변경|PATCH|/exchange/:postId/state||
