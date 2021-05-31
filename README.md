@@ -43,8 +43,8 @@
 ![image](https://user-images.githubusercontent.com/79817676/120127375-30d23780-c1fa-11eb-894b-cfff8f62e06f.png)
 
 
-## 주요 API
-
+## API 설계
+- 상세 페이지 : https://www.notion.so/_Clone_Introduction-9b0d01af52b14ee88bd1f5212b480bd7 <br>
 
 
 |기능|Method|URL| Request Params / Body, Response|
