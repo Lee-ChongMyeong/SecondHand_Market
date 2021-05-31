@@ -50,19 +50,19 @@
 |기능|Method|URL| Request Params / Body, Response|
 |:---|:---:|:---:|:---:|
 |접속자 정보|GET|/user|userId, nickname, id, area|
-|데일리 질문 받기(3개)|GET|/card/daily|cardId, topic, contents, createdUser, available, profileImg, answerCount, otherProfileImg|
-|답변쓰기|POST|/card| questionId, contents, isOpen |
-|프로필 수정|PATCH|/myPage/profile| id, nickname, profileImg, introduce, topic |
-|내 책장 월별 확인|GET|/bookshelf/books/:YYMMD| books : [{ id, count }] |
-|카드 디테일|GET|/bookshelf/bookCardDetail/:answerId| questionCreatedUserId, questionCreatedUserNickname, name, profileImg, questionTopic, questionContents, answerId, ansewrContents, answerUserProfileImg, nickname, isOpen, like, likeCount |
-|유저 검색|GET|/bookshelf/searchUser | userInfo:[{ profileImg, introduce, nickname, userId }] |
-|친구 추가 |POST|/bookshelf/addfriend |  |
-|좋아요 클릭|POST|/bookshelf/like/answerCard| answerCardId, likeCountNum, currentLike] |
-|내 답변 삭제하기|DELETE|/card/myAnswer/:answerId| |
-|내 답변 수정하기|PATCH|/card/myAnswer/| |
-|커뮤니티-랜덤 질문카드 2개뽑기|GET|/ourPlace/cards| result:[{ questions, quesitonId, contents, topic, nickname}], answers:[{ userId, profileImg, nickname, answerId, contents}] |
-|댓글 리스트|GET|/comment/:cardId?page=number| comments:[{ commentId, commentContents, userId, tag, nickname, commentLikeCOunt, commentLike, profileImg }] |
-|댓글 작성|POST|/commentId/:cardId| |
+|회원가입 요청|POST|/| msg : "empty" ||  "not_match" || "incorrect_id" || "incorrect_password" || "incorrect_nickname" "exist_user" || "error" || "success"|
+|로그인 요청|POST|/auth|{ msg : "success" || "fail" }|
+|글 목록|GET|/exchange|posts:[{ exchangeId, nickname, title, price, contents, loveCount, area, beforeTime, soldState}]..|
+|중고거래 글 정보|GET|/exchange|exchangeId, title, price, beforeTime , nickname, loveCount, area, contents , img:[이미지1,2...], soldState|
+|판매상태 변경|PATCH|/exchange/:postId/state||
+|글 등록 요청|POST|/exchange| |
+|글 삭제 요청|DELETE|/exchange/:exchangeId| |
+|글 수정 요청|PATCH|/exchange/:exchangeId| |
+|글 목록|GET|/town?lastId=<마지막글ID>| status, boards: [{townId, nickname, area, contents, category, date, commentCount, images: [], userId },..... |
+|글 등록 요청|POST|/town| |
+|동네생활 글 정보|POST|/town/:townId|
+
+
 
 
 
