@@ -49,7 +49,7 @@
 
 |기능|Method|URL| Request Params / Body|
 |:---|:---:|:---:|:---:|
-|구글 로그인|GET|/auth/google||
+|접속자 정보|GET|/user|userId, nickname, id, area|
 |데일리 질문 받기(3개)|GET|/card/daily|cardId, topic, contents, createdUser, available, profileImg, answerCount, otherProfileImg|
 |답변쓰기|POST|/card| questionId, contents, isOpen |
 |프로필 수정|PATCH|/myPage/profile| id, nickname, profileImg, introduce, topic |
