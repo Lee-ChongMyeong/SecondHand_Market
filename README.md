@@ -54,7 +54,7 @@
 
 
 ## DB 설계 
-![image](https://user-images.githubusercontent.com/79817676/119849209-68658900-bf47-11eb-9e88-832a99e86322.png)
+![image](https://user-images.githubusercontent.com/79817676/120127375-30d23780-c1fa-11eb-894b-cfff8f62e06f.png)
 
 
 ## 주요 API
