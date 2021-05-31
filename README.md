@@ -75,4 +75,4 @@
 - https://www.notion.so/6-5e55dd586d67463f8d94a368d4ada8b4
 
 ## Front-End(React) 코드 
-- https://github.com/DabinLim/mind_bookshelf
+- https://github.com/kim-jiha95/carrot-market-Clone
